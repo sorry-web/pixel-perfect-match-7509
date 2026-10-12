@@ -199,12 +199,25 @@ export const PHASES = [
   },
 ];
 
-export const SLIDES = [
+const ELEMENT_NOTES: Record<SKey, string> = {
+  strategy: "Strategy first: the inspection gives us a starting point. I propose narrowing everything to three priorities so the whole school pulls in one direction.",
+  structure: "Structure: priorities need owners. Named leads with clear remits mean nothing falls between the cracks, and staff know who to approach.",
+  systems: "Systems: the case suggests problems are spotted too late. A simple tracking cycle with clear triggers lets us act early on absence and attainment.",
+  values: "Shared Values sit at the centre. Ms. Aminah's task force — student leaders, teachers and board members — is the natural place to co-create them.",
+  style: "Style: morale is shaped by how leaders behave. A visible, coaching-led style pairs high expectations with high support.",
+  staff: "Staff: teachers carry the change. Protecting workload and building peer support makes new practice possible.",
+  skills: "Skills: outdated practice is one of the five warning signs. Sustained, practical professional development with coaching addresses it directly.",
+};
+
+export type SlideDef = { id: string; title: string; notes: string; element?: SKey };
+
+export const SLIDES: SlideDef[] = [
   { id: "opening", title: "Opening", notes: "Welcome. Over the next ten minutes I'll propose how St Anthony's can be transformed — not through one fix, but by aligning the whole organisation using the McKinsey 7-S Framework." },
-  { id: "challenge", title: "The Challenge", notes: "St Anthony's faces five connected warning signs. They reinforce each other: outdated teaching lowers engagement, which drives absence, which lowers results. Fixing one in isolation won't hold — we need alignment." },
-  { id: "framework", title: "The Framework", notes: "The 7-S model has three hard elements — strategy, structure, systems — which are easier to define, and four soft elements — shared values, style, staff and skills — which are harder to change but often decisive. Shared values sit at the centre." },
-  { id: "elements", title: "The Seven Elements", notes: "Let's walk through each element. For each I'll show the problem, the proposed intervention, how it would be implemented, and how we would measure progress. All metrics shown are proposals, not current school data." },
-  { id: "alignment", title: "The Alignment", notes: "The elements are interdependent. Hover any element to see what it relies on. A new strategy without new skills fails; new systems without supportive leadership create fear. Lasting change requires all seven to move together." },
+  { id: "challenge", title: "The Case", notes: "The case gives us five warning signs. Ms. Aminah has been appointed principal and has formed a task force of student leaders, teachers and board members. The signs reinforce each other: outdated teaching lowers engagement, which drives absence, which lowers results." },
+  { id: "framework", title: "The Framework", notes: "The 7-S model has three hard elements — strategy, structure, systems — which are easier to define, and four soft elements — style, staff, skills and, at the centre, shared values. Select any element to jump to it." },
+  ...ELEMENTS.map((e) => ({ id: e.key, title: e.name, notes: ELEMENT_NOTES[e.key], element: e.key })),
+  { id: "alignment", title: "Alignment", notes: "The elements are interdependent. Select any element to see what it relies on. A new strategy without new skills fails; new systems without supportive leadership create fear. Lasting change requires all seven to move together." },
   { id: "roadmap", title: "90-Day Roadmap", notes: "The plan is phased. First thirty days: listen, diagnose, stabilise. Next thirty: implement and support staff. Final thirty: evaluate and refine. Each phase has a clear owner and a signal of progress." },
+  { id: "measurement", title: "Measurement", notes: "How would we know it's working? These are proposed indicators, mapped to the five warning signs. They are not current school data — baselines would be agreed in the first thirty days." },
   { id: "closing", title: "Closing", notes: "To close: better schools are not built by isolated solutions. They're built by aligned systems, empowered people and a shared purpose. Thank you." },
 ];
