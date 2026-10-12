@@ -81,7 +81,7 @@ export function Deck() {
 
       <main
         key={i}
-        className="mx-auto w-full max-w-7xl flex-1 overflow-y-auto px-6 py-8 sm:px-12"
+        className="mx-auto w-full max-w-7xl min-h-0 flex-1 overflow-y-auto px-6 py-8 sm:px-12"
         aria-roledescription="slide"
         aria-label={`${i + 1} of ${n}: ${s.title}`}
       >
