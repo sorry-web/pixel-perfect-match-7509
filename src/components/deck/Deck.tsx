@@ -29,7 +29,7 @@ export function Deck() {
     const url = new URL(window.location.href);
     url.searchParams.set("slide", String(i + 1));
     window.history.replaceState(null, "", url);
-    document.title = `${i + 1}/${n} — ${SLIDES[i].title} · St Anthony's`;
+    document.title = `${i + 1}/${n} — ${SLIDES[i]!.title} · St Anthony's`;
   }, [i, n]);
 
   const toggleFs = () => {
@@ -78,10 +78,10 @@ export function Deck() {
   return (
     <div
       className="stage-bg relative flex h-dvh flex-col overflow-hidden"
-      onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
+      onTouchStart={(e) => (touch.current = e.touches[0]!.clientX)}
       onTouchEnd={(e) => {
         if (touch.current === null) return;
-        const dx = e.changedTouches[0].clientX - touch.current;
+        const dx = e.changedTouches[0]!.clientX - touch.current;
         if (Math.abs(dx) > 60) go(i + (dx < 0 ? 1 : -1));
         touch.current = null;
       }}
@@ -104,14 +104,14 @@ export function Deck() {
         </div>
       </header>
 
-      <main key={i} className="mx-auto w-full max-w-7xl flex-1 overflow-y-auto px-5 py-8 sm:px-10" aria-roledescription="slide" aria-label={`${i + 1} of ${n}: ${SLIDES[i].title}`}>
+      <main key={i} className="mx-auto w-full max-w-7xl flex-1 overflow-y-auto px-5 py-8 sm:px-10" aria-roledescription="slide" aria-label={`${i + 1} of ${n}: ${SLIDES[i]!.title}`}>
         {slide}
       </main>
 
       {notes && (
         <aside className="glass mx-5 mb-3 rounded-xl p-4 text-sm leading-relaxed sm:mx-10" aria-label="Speaker notes">
-          <p className="kicker mb-1">Speaker notes · {SLIDES[i].title}</p>
-          {SLIDES[i].notes}
+          <p className="kicker mb-1">Speaker notes · {SLIDES[i]!.title}</p>
+          {SLIDES[i]!.notes}
         </aside>
       )}
 
@@ -131,7 +131,7 @@ export function Deck() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <span className="kicker hidden sm:inline">{SLIDES[i].title}</span>
+          <span className="kicker hidden sm:inline">{SLIDES[i]!.title}</span>
           <button className={ctrl} onClick={() => go(i - 1)} disabled={i === 0} aria-label="Previous slide"><ChevronLeft className="h-4 w-4" /></button>
           <button className={ctrl} onClick={() => go(i + 1)} disabled={i === n - 1} aria-label="Next slide"><ChevronRight className="h-4 w-4" /></button>
         </div>

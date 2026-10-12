@@ -112,7 +112,7 @@ export function Elements({ selected, setSelected }: { selected: SKey | null; set
   const el = ELEMENTS[idx];
 
   if (el) {
-    const go = (d: number) => setSelected(ELEMENTS[(idx + d + 7) % 7].key);
+    const go = (d: number) => setSelected(ELEMENTS[(idx + d + 7) % 7]!.key);
     return (
       <div key={el.key} className="flex h-full flex-col justify-center">
         <div className="flex flex-wrap items-center justify-between gap-4">
