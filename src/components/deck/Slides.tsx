@@ -17,7 +17,7 @@ function Eyebrow({ n, children }: { n: string; children: React.ReactNode }) {
 /* 01 ─ Opening */
 export function Opening() {
   return (
-    <div className="grid h-full items-center gap-8 lg:grid-cols-[1.25fr_1fr]">
+    <div className="grid min-h-full items-center gap-8 lg:grid-cols-[1.25fr_1fr]">
       <div>
         <p className="kicker rise">Educational leadership · Case analysis</p>
         <h1 className="display rise mt-8 text-[clamp(3.2rem,8vw,7.5rem)]" style={d(0.1)}>
@@ -41,7 +41,7 @@ export function Opening() {
 /* 02 ─ The case */
 export function Challenge() {
   return (
-    <div className="flex h-full flex-col justify-center">
+    <div className="flex min-h-full flex-col justify-center">
       <Eyebrow n="02">The case</Eyebrow>
       <div className="mt-6 grid gap-10 lg:grid-cols-[1fr_1.5fr] lg:items-end">
         <h2 className="display rise text-[clamp(2.6rem,5.5vw,5rem)]" style={d(0.05)}>
@@ -77,7 +77,7 @@ export function Framework({ onSelect }: { onSelect: (k: SKey) => void }) {
   const [hover, setHover] = useState<SKey | null>(null);
   const h = ELEMENTS.find((e) => e.key === hover);
   return (
-    <div className="grid h-full items-center gap-10 lg:grid-cols-[1fr_1.15fr]">
+    <div className="grid min-h-full items-center gap-10 lg:grid-cols-[1fr_1.15fr]">
       <div>
         <Eyebrow n="03">The framework</Eyebrow>
         <h2 className="display rise mt-6 text-[clamp(2.6rem,5.5vw,5rem)]" style={d(0.05)}>
@@ -112,7 +112,7 @@ export function ElementSlide({ k, onBack }: { k: SKey; onBack: () => void }) {
   const el = ELEMENTS[idx]!;
   const flip = idx % 2 === 1;
   return (
-    <div className="flex h-full flex-col justify-center">
+    <div className="flex min-h-full flex-col justify-center">
       <div className="flex items-center justify-between">
         <Eyebrow n={String(idx + 4).padStart(2, "0")}>{el.kind} element · {idx + 1} of 7</Eyebrow>
         <button onClick={onBack} className="kicker underline-offset-4 hover:text-forest hover:underline">
@@ -162,7 +162,7 @@ export function Alignment() {
   const cur = hover ?? active;
   const el = ELEMENTS.find((e) => e.key === cur)!;
   return (
-    <div className="grid h-full items-center gap-10 lg:grid-cols-[1.2fr_1fr]">
+    <div className="grid min-h-full items-center gap-10 lg:grid-cols-[1.2fr_1fr]">
       <SevenS mode="links" active={cur} onHover={setHover} onSelect={setActive} className="fadein order-2 mx-auto w-full max-w-xl lg:order-1" />
       <div className="order-1 lg:order-2">
         <Eyebrow n="11">Alignment</Eyebrow>
@@ -186,7 +186,7 @@ export function Alignment() {
 /* 12 ─ Roadmap */
 export function Roadmap() {
   return (
-    <div className="flex h-full flex-col justify-center">
+    <div className="flex min-h-full flex-col justify-center">
       <Eyebrow n="12">90-day roadmap</Eyebrow>
       <h2 className="display rise mt-6 text-[clamp(2.6rem,5vw,4.5rem)]" style={d(0.05)}>
         Listen. Build. <em className="text-forest">Refine.</em>
@@ -223,7 +223,7 @@ const MEASURES: { sign: string; items: string[] }[] = [
 
 export function Measurement() {
   return (
-    <div className="flex h-full flex-col justify-center">
+    <div className="flex min-h-full flex-col justify-center">
       <Eyebrow n="13">Measurement</Eyebrow>
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-end">
         <h2 className="display rise text-[clamp(2.6rem,5vw,4.5rem)]" style={d(0.05)}>
@@ -260,7 +260,7 @@ export function Measurement() {
 /* 14 ─ Closing */
 export function Closing() {
   return (
-    <div className="grid h-full items-center gap-10 lg:grid-cols-[1.3fr_1fr]">
+    <div className="grid min-h-full items-center gap-10 lg:grid-cols-[1.3fr_1fr]">
       <div>
         <p className="kicker rise">In closing</p>
         <h2 className="display rise mt-8 text-[clamp(2.8rem,6.5vw,6rem)]" style={d(0.1)}>
