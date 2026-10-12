@@ -1,29 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Home, Maximize2, Minimize2, NotebookPen } from "lucide-react";
+import { ArrowRight, RotateCcw } from "lucide-react";
 import { SLIDES, type SKey } from "./content";
-import { Alignment, Challenge, Closing, Elements, Framework, Opening, Roadmap } from "./Slides";
+import { Alignment, Challenge, Closing, ElementSlide, Framework, Measurement, Opening, Roadmap } from "./Slides";
+
+const FRAMEWORK = SLIDES.findIndex((s) => s.id === "framework");
 
 export function Deck() {
   const [i, setI] = useState(0);
-  const [selected, setSelected] = useState<SKey | null>(null);
   const [notes, setNotes] = useState(false);
-  const [fs, setFs] = useState(false);
   const touch = useRef<number | null>(null);
   const n = SLIDES.length;
+  const last = i === n - 1;
 
   useEffect(() => {
     const s = Number(new URLSearchParams(window.location.search).get("slide"));
     if (s >= 1 && s <= n) setI(s - 1);
   }, [n]);
 
-  const go = useCallback(
-    (t: number) => {
-      const next = Math.max(0, Math.min(n - 1, t));
-      setI(next);
-      if (next !== 3) setSelected(null);
-    },
-    [n],
-  );
+  const go = useCallback((t: number) => setI(Math.max(0, Math.min(n - 1, t))), [n]);
+  const next = useCallback(() => setI((v) => (v >= n - 1 ? 0 : v + 1)), [n]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -32,52 +27,45 @@ export function Deck() {
     document.title = `${i + 1}/${n} — ${SLIDES[i]!.title} · St Anthony's`;
   }, [i, n]);
 
-  const toggleFs = () => {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else document.documentElement.requestFullscreen?.();
-  };
-
-  useEffect(() => {
-    const onFs = () => setFs(!!document.fullscreenElement);
-    document.addEventListener("fullscreenchange", onFs);
-    return () => document.removeEventListener("fullscreenchange", onFs);
-  }, []);
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (e.key === "ArrowRight" || e.key === "PageDown" || (e.key === " " && tag !== "BUTTON")) {
         e.preventDefault();
-        go(i + 1);
+        if (!last) go(i + 1);
       } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
         e.preventDefault();
         go(i - 1);
-      } else if (e.key === "Home") go(0);
-      else if (e.key === "End") go(n - 1);
-      else if (e.key.toLowerCase() === "n") setNotes((v) => !v);
-      else if (e.key.toLowerCase() === "f") toggleFs();
-      else if (e.key === "Escape" && selected) setSelected(null);
+      } else if (e.key.toLowerCase() === "n") setNotes((v) => !v);
+      else if (e.key.toLowerCase() === "f") {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else document.documentElement.requestFullscreen?.();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [i, n, go, selected]);
+  }, [i, go, last]);
 
-  const slide = [
-    <Opening key="o" onEnter={() => go(1)} />,
-    <Challenge key="c" />,
-    <Framework key="f" onSelect={(k) => { setSelected(k); go(3); }} />,
-    <Elements key="e" selected={selected} setSelected={setSelected} />,
-    <Alignment key="a" />,
-    <Roadmap key="r" />,
-    <Closing key="cl" onRestart={() => go(0)} />,
-  ][i];
+  const s = SLIDES[i]!;
+  const openElement = (k: SKey) => go(SLIDES.findIndex((x) => x.element === k));
 
-  const ctrl = "glass inline-flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors hover:text-navy disabled:opacity-30";
+  let body: React.ReactNode;
+  if (s.element) body = <ElementSlide k={s.element} onBack={() => go(FRAMEWORK)} />;
+  else
+    body = {
+      opening: <Opening />,
+      challenge: <Challenge />,
+      framework: <Framework onSelect={openElement} />,
+      alignment: <Alignment />,
+      roadmap: <Roadmap />,
+      measurement: <Measurement />,
+      closing: <Closing />,
+    }[s.id];
 
   return (
     <div
-      className="stage-bg relative flex h-dvh flex-col overflow-hidden"
+      className="relative flex h-dvh flex-col overflow-hidden bg-background"
       onTouchStart={(e) => (touch.current = e.touches[0]!.clientX)}
       onTouchEnd={(e) => {
         if (touch.current === null) return;
@@ -86,56 +74,46 @@ export function Deck() {
         touch.current = null;
       }}
     >
-      <div className="absolute inset-x-0 top-0 h-px bg-hairline">
-        <div className="h-full bg-navy transition-all duration-700" style={{ width: `${((i + 1) / n) * 100}%` }} />
-      </div>
-
-      <header className="flex items-center justify-between px-5 pt-5 sm:px-10">
-        <button onClick={() => go(0)} className="kicker inline-flex items-center gap-2 hover:text-navy" aria-label="Return to beginning">
-          <Home className="h-3.5 w-3.5" /> St Anthony's
-        </button>
-        <div className="flex items-center gap-2">
-          <button className={ctrl} onClick={() => setNotes((v) => !v)} aria-pressed={notes} aria-label="Toggle speaker notes (N)" title="Speaker notes (N)">
-            <NotebookPen className="h-4 w-4" />
-          </button>
-          <button className={ctrl} onClick={toggleFs} aria-label="Toggle presentation mode (F)" title="Presentation mode (F)">
-            {fs ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-          </button>
-        </div>
+      <header className="flex items-center justify-between px-6 pt-6 sm:px-12">
+        <p className="kicker">St Anthony's · McKinsey 7-S</p>
+        <p className="kicker hidden sm:block">{s.title}</p>
       </header>
 
-      <main key={i} className="mx-auto w-full max-w-7xl flex-1 overflow-y-auto px-5 py-8 sm:px-10" aria-roledescription="slide" aria-label={`${i + 1} of ${n}: ${SLIDES[i]!.title}`}>
-        {slide}
+      <main
+        key={i}
+        className="mx-auto w-full max-w-7xl flex-1 overflow-y-auto px-6 py-8 sm:px-12"
+        aria-roledescription="slide"
+        aria-label={`${i + 1} of ${n}: ${s.title}`}
+      >
+        {body}
       </main>
 
       {notes && (
-        <aside className="glass mx-5 mb-3 rounded-xl p-4 text-sm leading-relaxed sm:mx-10" aria-label="Speaker notes">
-          <p className="kicker mb-1">Speaker notes · {SLIDES[i]!.title}</p>
-          {SLIDES[i]!.notes}
+        <aside className="glass fadein mx-6 mb-3 rounded-md p-4 text-sm leading-relaxed sm:mx-12" aria-label="Speaker notes">
+          <p className="kicker mb-1">Notes · {s.title}</p>
+          {s.notes}
         </aside>
       )}
 
-      <footer className="flex items-center justify-between gap-4 px-5 pb-5 sm:px-10">
-        <nav aria-label="Slides" className="flex items-center gap-1">
-          {SLIDES.map((s, k) => (
-            <button
-              key={s.id}
-              onClick={() => go(k)}
-              aria-current={k === i ? "step" : undefined}
-              aria-label={`Slide ${k + 1}: ${s.title}`}
-              title={s.title}
-              className={`h-8 min-w-8 rounded-full px-2 text-xs font-semibold tabular-nums transition-colors ${k === i ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-navy"}`}
-            >
-              {String(k + 1).padStart(2, "0")}
-            </button>
-          ))}
-        </nav>
-        <div className="flex items-center gap-2">
-          <span className="kicker hidden sm:inline">{SLIDES[i]!.title}</span>
-          <button className={ctrl} onClick={() => go(i - 1)} disabled={i === 0} aria-label="Previous slide"><ChevronLeft className="h-4 w-4" /></button>
-          <button className={ctrl} onClick={() => go(i + 1)} disabled={i === n - 1} aria-label="Next slide"><ChevronRight className="h-4 w-4" /></button>
-        </div>
+      <footer className="flex items-center justify-between gap-4 px-6 pb-6 sm:px-12">
+        <p className="text-sm tabular-nums text-muted-foreground" aria-live="polite">
+          <span className="font-semibold text-foreground">{String(i + 1).padStart(2, "0")}</span>
+          <span className="mx-1.5">/</span>
+          {String(n).padStart(2, "0")}
+          <span className="ml-4 hidden text-xs md:inline">← → to navigate · N notes · F full screen</span>
+        </p>
+        <button
+          onClick={next}
+          className="group inline-flex items-center gap-3 rounded-full bg-primary py-3 pl-6 pr-5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-soft)] transition-all duration-300 hover:pr-4 hover:pl-7"
+        >
+          {last ? "Restart" : "Next"}
+          {last ? <RotateCcw className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+        </button>
       </footer>
+
+      <div className="absolute inset-x-0 bottom-0 h-0.5 bg-hairline">
+        <div className="h-full bg-forest transition-all duration-700" style={{ width: `${((i + 1) / n) * 100}%` }} />
+      </div>
     </div>
   );
 }
